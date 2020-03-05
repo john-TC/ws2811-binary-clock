@@ -6,6 +6,7 @@
 #include <WiFiUdp.h>
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
+#include <MySecrets.h>       // Library used to store sensitive information eg. passwords, etc...
 
 #define LED_TYPE WS2811
 #define NUM_LEDS 50
@@ -14,8 +15,11 @@
 #define BRIGHTNESS 32
 #define WIFI_LED 2
 
-#define SSID "********"
-#define PASSWORD "********"
+MySecrets secret;
+#define SSID secret.ssid
+#define PASSWORD secret.password
+#define CITY_ID secret.cityId
+#define API_KEY secret.apiKey
 
 int ledPinsSec[] = {20, 21, 22, 23, 24, 25};
 int ledPinsMin[] = {31, 30, 29, 28, 27, 26};
@@ -177,7 +181,7 @@ void dispBinaryYear(byte nYear) {
 }
 
 int getTemp() {
-  http.begin("http://api.openweathermap.org/data/2.5/weather?id={CITY-ID}&appid={API-KEY}&units=metric");
+  http.begin("http://api.openweathermap.org/data/2.5/weather?id=" + CITY_ID + "&appid=" + API_KEY + "&units=metric");
   http.GET();
   const size_t capacity = JSON_ARRAY_SIZE(3) + 2*JSON_OBJECT_SIZE(1) + JSON_OBJECT_SIZE(2) + 3*JSON_OBJECT_SIZE(4) + JSON_OBJECT_SIZE(5) + JSON_OBJECT_SIZE(6) + JSON_OBJECT_SIZE(12) + 480;
   DynamicJsonBuffer jsonBuffer(capacity);
